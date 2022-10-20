@@ -26,4 +26,21 @@ response_data = {
                 }
                 
                 
-                
+    img_path='./20190822_6.jpg'           
+    img_data_bs64 = None
+    with open(img_path, "rb") as f:
+        img_data = f.read()
+        img_data = zlib.compress(img_data)
+        img_data_bs64 = base64.b64encode(img_data)
+        
+        
+     post_request_data = {
+        "dev_id":dev_id,
+        "map_id":map_id,
+        "position_id":position_id,
+        "task_id":task_id,
+        "position": position,
+        "data":data,
+        "image":str(img_data_bs64, encoding='ascii')  # bytes -> str, 'ascii' for base64
+    }            
+        
