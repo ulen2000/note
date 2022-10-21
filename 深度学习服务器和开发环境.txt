@@ -1,0 +1,92 @@
+深度学习服务器和开发环境
+
+1. 服务器环境
+    1.1 账号信息：
+        ip: 10.10.2.208 
+        端口: 22
+        账号: 
+            用户名1: inspur  密码: inspur12345==
+            用户名2: zhuyy   密码: zhuyy12345== 
+            用户名3：mafeng  密码: mafeng12345==
+            用户名4：panjh   密码: panjiahao
+			用户名5：zhangyl 密码: zhangyl
+    
+    1.2 硬件环境:
+        CPU: Intel(R) Xeon(R) Silver 4214R CPU @ 2.40GHz    48 cores
+        MEM: 64GB
+        GPU: NVIDIA GeForce RTX 3080   10GB  4块
+    
+    1.3 软件环境：
+        OS:         Ubuntu 20.04.3
+        Docker:     20.10.12
+        GPU Driver: 470.103.01 
+
+    1.4 容器环境
+        OS:             Ubuntu 18.04.5 LTS
+        CUDA:           1.8.1
+        CuDNN:          8.0.5
+        Miniconda:      4.9.2
+        Python:         3.8.5
+        pytorch:        1.8.1 LTS
+        torchvision:    0.9.1
+
+    1.5 Docker镜像
+        Nvidia基础镜像:
+            nvidia/cuda:11.1.0-cudnn8-devel-ubuntu18.04
+            nvidia/cuda:11.1.1-cudnn8-devel-ubuntu20.04
+
+        Pytorch1.8.1镜像:
+            zhuyy/pytorch:cuda11.1.0-cudnn8.0.5-pytorch1.8.1-ubuntu18.04-devel
+
+        制作镜像
+            Dockerfile: X:\docker\dockerfiles\pytorch\Dockerfile_Pytorch1.8.1
+            sudo docker build -f Dockerfile_Pytorch1.8.1 -t zhuyy/pytorch:cuda11.1.0-cudnn8.0.5-pytorch1.8.1-ubuntu18.04-devel .
+
+        容器默认登录账户: root  密码:zjrob2015
+
+    1.6 创建Docker容器
+        Pytorch1.8.1训练开发环境容器
+            容器名: zhuyy_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_det
+            命令: docker run --runtime=nvidia --restart=always --ipc=host -d --shm-size=4g -p 30022:22 -p 36000:6000 -p 30080:8000 -v /disk/diska:/data/zhuyy -v /disk/diskb:/data/data2 --name zhuyy_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_det zhuyy/pytorch:cuda11.1.0-cudnn8.0.5-pytorch1.8.1-ubuntu18.04-devel /etc/init.d/ssh start -D
+            命令: docker run --runtime=nvidia --restart=always --ipc=host -d --shm-size=4g -p 40022:22 -p 46000:6000 -p 40080:8000 -v /disk/diska:/data/data1 -v /disk/diskb:/data/data2 --name mfeng_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_det zhuyy/pytorch:cuda11.1.0-cudnn8.0.5-pytorch1.8.1-ubuntu18.04-devel /etc/init.d/ssh start -D
+			命令: docker run --runtime=nvidia --restart=always --ipc=host -d --shm-size=4g -p 50022:22 -p 56000:6000 -p 50080:8000 -v /disk/diska:/data/data1 -v /disk/diskb:/data/data2 --name zhangyl_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_det zhuyy/pytorch:cuda11.1.0-cudnn8.0.5-pytorch1.8.1-ubuntu18.04-devel /etc/init.d/ssh start -D
+        Pytorch1.8.1部署环境容器
+            容器名: zhuyy_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_deploy
+            命令: docker run --runtime=nvidia --restart=always --ipc=host -d --shm-size=4g -p 20022:22 -p 26000:6000 -p 28000:8000 -p 20030-20090:20030-20090 -v /disk/diska:/data/zhuyy --name zhuyy_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_deploy zhuyy/pytorch:cuda11.1.0-cudnn8.0.5-pytorch1.8.1-ubuntu18.04-devel /etc/init.d/ssh start -D
+    
+    1.7 图像组当前使用的容器
+        训练开发容器
+            zhuyy_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_det
+                ssh登录方式
+                    IP地址:10.10.2.208  端口: 30022
+                    用户名: root
+                    密码：zjrob2015
+                数据目录: -v /disk/diska:/data/data1 -v /disk/diskb:/data/data2
+                端口映射：p 30022:22 -p 36000:6000 -p 30080:8000 
+
+            mfeng_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_det
+              ssh登录方式
+                    IP地址:10.10.2.208  端口: 40022
+                    用户名: root
+                    密码：zjrob2015
+                数据目录: /disk/diska:/data/data1  /disk/diskb:/data/data2
+                端口映射：p 40022:22 -p 46000:6000 -p 40080:8000
+                samba 访问 \\10.10.2.208\mafeng   用户名: mafeng  密码: mafeng12345==
+			
+zhangyl_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_det
+				ssh登录方式
+					IP地址:10.10.2.208  端口: 50022
+                    用户名: root
+                    密码：zjrob2015
+                数据目录: /disk/diska:/data/data1  /disk/diskb:/data/data2
+                端口映射：p 40022:22 -p 56000:6000 -p 50080:8000
+                samba 访问 \\10.10.2.208\zhangyl   用户名: zhangyl  密码: zhangyl
+
+        服务部署容器     
+            gcai_pytorch1.8.1_cuda11.1.0-cudnn8.0.5-ubuntu18.04-python3.8.5_deploy
+            ssh登录方式
+                IP地址:10.10.2.208  端口: 20022
+                用户名: root
+                密码：zjrob2015
+            数据目录: -v /disk/diska:/data/data1/ -v /disk/diskb:/data/data2
+            端口映射: -p 20022:22 -p 26000:6000 -p 28000:8000 -p 20030-20090:20030-20090
